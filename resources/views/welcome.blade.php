@@ -18,15 +18,56 @@
             display: flex;
             flex-direction: column;
         }
+
+            .tt-query {
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            }
+
+            .tt-hint {
+            color: #999
+            }
+
+            .tt-menu {    /* used to be tt-dropdown-menu in older versions */
+            width: 422px;
+            margin-top: 4px;
+            padding: 4px 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                    border-radius: 4px;
+            -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+            }
+
+            .tt-suggestion {
+            padding: 3px 20px;
+            line-height: 24px;
+            }
+
+            .tt-suggestion.tt-cursor,.tt-suggestion:hover {
+            color: #fff;
+            background-color: #0097cf;
+
+            }
+
+            .tt-suggestion p {
+            margin: 0;
+            }
+
     </style>
 @endsection
 
 @section('content')
-<div class="header header-filter" style="background-image: url('https://images.unsplash.com/photo-1423655156442-ccc11daa4e99?crop=entropy&dpr=2&fit=crop&fm=jpg&h=750&ixjsv=2.1.0&ixlib=rb-0.3.5&q=50&w=1450');">
+<div class="header header-filter" style="background-image: url('https://scontent.flim15-2.fna.fbcdn.net/v/t31.0-8/11703466_474380999395827_7705652112672319349_o.jpg?_nc_cat=102&ccb=2&_nc_sid=9267fe&_nc_eui2=AeHYIwDU1RX2Muq2S_iAhV_6OI8h7b49ag44jyHtvj1qDne0Fr2AjgUrFXCkVT6wyUGhqdar7VAWpFIbYjcXoIcn&_nc_ohc=pcQ0dX9mMV8AX-a_ych&_nc_ht=scontent.flim15-2.fna&oh=6e95196f18968283519ccb8f40f525da&oe=5FBFC659');">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <h1 class="title">Bienvenido a App Shop</h1>
+                <h1 class="title">Bienvenido a Biofoods Peru S.A.C</h1>
                 <h4>Realiza pedidos en linea y te contactaremos para coordinar la entrega.</h4>
                 <br />
                 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="btn btn-danger btn-raised btn-lg">
@@ -81,31 +122,38 @@
         </div>
 
         <div class="section text-center">
-            <h2 class="title">Productos disponibles</h2>
+            <h2 class="title">Visita nuestras categorias</h2>
 
-            <div class="team">
+            <form class="form-inline" method="get" action="{{ url('/search') }}">
+                <input type="text" placeholder="¿Qué producto buscas?" class="form-control" name="query" id="search ">
+                <button class="btn btn-primary btn-just-icon" type="submit" >
+                    <i class="material-icons">search</i>
+                </button>
+            
+            </form>
+
+
+
+
+            <div class="team text-center">
                 <div class="row">
-                    @foreach($products as $product)
+                    @foreach($categories as $category)
                         
                     <div class="col-md-4">
                         <div class="team-player">
                           
-                            <img src="{{ $product->featured_image_url }}" alt="Thumbnail Image" class="img-raised img-circle">
+                            <img src="{{ $category->featured_image_url }}" alt="Imagen representativa de la categoria {{ $category->name }}" class="img-raised img-circle">
                             <h4 class="title">
-                                <a href="{{ url('/products/'.$product->id) }}">{{ $product->name }}</a> 
-                                <br />
-                                <small class="text-muted">{{ $product->category->name }}</small>
+                                <a href="{{ url('/categories/'.$category->id) }}">{{ $category->name }}</a> 
                             </h4>
-                            <p class="description">{{$product->description}}</p>
+                            <p class="description">{{ $category->description}}</p>
                             
                         </div>
                     </div>
                     @endforeach
 
                 </div>
-                <div class="text-center">
-                    {{$products->links() }}
-                </div>
+
             </div>
 
         </div>
@@ -154,4 +202,33 @@
 </div>
 
 @include('includes.footer')
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('/js/typeahead.bundle.min.js') }}"></script>
+    <script>
+        var product = new Bloodhound({
+        datumTokenizer: function(d) { return Bloodhound.tokenizers.whitespace(d.busca); },
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: [
+        { busca: 'prueba1' },
+        { busca: 'prueba2' },
+        { busca: 'hola 1' },
+        { busca: 'hola 2' },
+        { busca: 'abcde' }
+
+        ]
+        });
+        
+        // initialize the bloodhound suggestion engine
+        product.initialize();
+        
+        // instantiate the typeahead UI
+        $('input').typeahead(null, {
+        displayKey: 'busca',
+        source: product.ttAdapter()
+        });
+
+    </script>
+
 @endsection
