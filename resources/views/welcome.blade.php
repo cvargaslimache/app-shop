@@ -4,60 +4,54 @@
 
 @section('styles')
     <style>
+            <style>
         .team .row .col-md-4 {
             margin-bottom: 5em;
         }
-        .row {
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: -ms-flexbox;
-            display: flex;
-            flex-wrap: wrap;
+        .team .row {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -ms-flexbox;
+          display:         flex;
+          flex-wrap: wrap;
         }
-        .row >[class*='col-']{
-            display: flex;
-            flex-direction: column;
+        .team .row > [class*='col-'] {
+          display: flex;
+          flex-direction: column;
         }
-
-            .tt-query {
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-                -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-            }
-
-            .tt-hint {
-            color: #999
-            }
-
-            .tt-menu {    /* used to be tt-dropdown-menu in older versions */
-            width: 422px;
-            margin-top: 4px;
-            padding: 4px 0;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            -webkit-border-radius: 4px;
-                -moz-border-radius: 4px;
-                    border-radius: 4px;
-            -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-                -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-                    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-            }
-
-            .tt-suggestion {
-            padding: 3px 20px;
-            line-height: 24px;
-            }
-
-            .tt-suggestion.tt-cursor,.tt-suggestion:hover {
-            color: #fff;
-            background-color: #0097cf;
-
-            }
-
-            .tt-suggestion p {
-            margin: 0;
-            }
+        .tt-query {
+          -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+             -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        }
+        .tt-hint {
+          color: #999
+        }
+        .tt-menu {    /* used to be tt-dropdown-menu in older versions */
+          width: 222px;
+          margin-top: 4px;
+          padding: 4px 0;
+          background-color: #fff;
+          border: 1px solid #ccc;
+          border: 1px solid rgba(0, 0, 0, 0.2);
+          -webkit-border-radius: 4px;
+             -moz-border-radius: 4px;
+                  border-radius: 4px;
+          -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+             -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+        }
+        .tt-suggestion {
+          padding: 3px 20px;
+          line-height: 24px;
+        }
+        .tt-suggestion.tt-cursor,.tt-suggestion:hover {
+          color: #fff;
+          background-color: #0097cf;
+        }
+        .tt-suggestion p {
+          margin: 0;
+        }
 
     </style>
 @endsection
@@ -125,7 +119,7 @@
             <h2 class="title">Visita nuestras categorias</h2>
 
             <form class="form-inline" method="get" action="{{ url('/search') }}">
-                <input type="text" placeholder="¿Qué producto buscas?" class="form-control" name="query" id="search ">
+                <input type="text" placeholder="¿Qué producto buscas?" class="form-control" name="query" id="search">
                 <button class="btn btn-primary btn-just-icon" type="submit" >
                     <i class="material-icons">search</i>
                 </button>
@@ -207,28 +201,22 @@
 @section('scripts')
     <script src="{{ asset('/js/typeahead.bundle.min.js') }}"></script>
     <script>
-        var product = new Bloodhound({
-        datumTokenizer: function(d) { return Bloodhound.tokenizers.whitespace(d.busca); },
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: [
-        { busca: 'prueba1' },
-        { busca: 'prueba2' },
-        { busca: 'hola 1' },
-        { busca: 'hola 2' },
-        { busca: 'abcde' }
-
-        ]
+        $(function () {
+            // 
+            var products = new Bloodhound({
+              datumTokenizer: Bloodhound.tokenizers.whitespace,
+              queryTokenizer: Bloodhound.tokenizers.whitespace,
+              prefetch: '{{ url("/products/json") }}'
+            });            
+            // inicializar typeahead sobre nuestro input de búsqueda
+            $('#search').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 1
+            }, {
+                name: 'products',
+                source: products
+            });
         });
-        
-        // initialize the bloodhound suggestion engine
-        product.initialize();
-        
-        // instantiate the typeahead UI
-        $('input').typeahead(null, {
-        displayKey: 'busca',
-        source: product.ttAdapter()
-        });
-
     </script>
-
 @endsection
